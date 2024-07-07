@@ -1,0 +1,52 @@
+{
+  "name": "coin-sorter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "format": "prettier --write . && eslint .",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
+  },
+  "dependencies": {
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-wallets": "^0.19.30",
+    "@solana/web3.js": "^1.90.1",
+    "@svelte-on-solana/wallet-adapter-anchor": "1.0.16-alpha.0",
+    "@svelte-on-solana/wallet-adapter-core": "1.0.11-alpha.0",
+    "@svelte-on-solana/wallet-adapter-ui": "1.0.21-alpha.0",
+    "axios": "^1.6.7",
+    "buffer": "^6.0.3",
+    "clerk-sveltekit": "^0.4.1",
+    "svelte-table": "^0.6.3",
+    "svelte-toasts": "^1.1.2"
+  },
+  "devDependencies": {
+    "@fontsource/fira-mono": "^5.0.13",
+    "@iconify/svelte": "^4.0.2",
+    "@neoconfetti/svelte": "^2.2.1",
+    "@sveltejs/adapter-auto": "^3.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "autoprefixer": "^10.4.19",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-svelte": "^2.35.1",
+    "eslint": "^8.56.0",
+    "postcss": "^8.4.38",
+    "prettier-plugin-svelte": "^3.1.2",
+    "prettier": "^3.1.1",
+    "svelte-check": "^3.8.1",
+    "svelte": "^4.2.18",
+    "tailwindcss": "^3.4.1",
+    "tslib": "^2.6.3",
+    "typescript": "^5.3.3",
+    "vite": "^5.3.1",
+    "wallet-adapter-core": "link:@types/svelte-on-solana/wallet-adapter-core"
+  }
+}
