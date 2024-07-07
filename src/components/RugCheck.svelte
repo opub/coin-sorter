@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import axios from 'axios';
 
   export let mint: string;
@@ -41,9 +40,9 @@
     }
   };
 
-  onMount(() => {
+  $: if (mint) {
     fetchTokenReport();
-  });
+  }
 </script>
 
 <a href="https://rugcheck.xyz/tokens/{mint}" target="_blank">
@@ -67,10 +66,8 @@
           {/each}
         </ul>
       {:else}
-        <p>No risks found.</p>
+        <p>💎 No risks found.</p>
       {/if}
-    {:else}
-      <p>Loading...</p>
     {/if}
   </div>
 </a>
