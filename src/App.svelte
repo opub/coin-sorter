@@ -1,14 +1,18 @@
 <script lang="ts">
   import logo from './assets/coins.png';
   import RugCheck from './components/RugCheck.svelte';
+  import DexToolsChart from './components/DexToolsChart.svelte';
 
-  let mint: string;
+  let mint: string = 'Bdpoziz793iwBUzzw2YDcPapdccrgNJ1ds5SZf1ppump';
 </script>
 
 <main>
   <h1><img src={logo} class="logo" alt="Logo" />Coin Sorter</h1>
   <input type="text" bind:value={mint} placeholder="Enter mint address" />
-  <RugCheck {mint} />
+  <div class="w-full columns-2 gap-4">
+    <DexToolsChart {mint} />
+    <RugCheck {mint} />
+  </div>
 </main>
 
 <style>
@@ -29,6 +33,6 @@
     border-radius: 0.25em;
     border: 1px solid #ccc;
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
   }
 </style>
