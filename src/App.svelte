@@ -1,38 +1,75 @@
 <script lang="ts">
   import logo from './assets/coins.png';
+  import { getTokenInfo, type TokenInfo } from './lib/utils';
   import RugCheck from './components/RugCheck.svelte';
   import DexToolsChart from './components/DexToolsChart.svelte';
 
   let mint: string = 'Bdpoziz793iwBUzzw2YDcPapdccrgNJ1ds5SZf1ppump';
+  let pair: string;
+  let info: TokenInfo | null;
+
+  $: if (mint) {
+    getTokenInfo(mint).then((tokenInfo: TokenInfo | null) => {
+      info = tokenInfo;
+      if (info?.pool) {
+        pair = info.pool;
+      }
+    });
+  }
 </script>
 
-<main>
-  <h1><img src={logo} class="logo" alt="Logo" />Coin Sorter</h1>
-  <input type="text" bind:value={mint} placeholder="Enter mint address" />
-  <div class="w-full columns-2 gap-4">
-    <DexToolsChart {mint} />
-    <RugCheck {mint} />
+<main class="flex flex-col min-h-screen">
+  <!-- Header -->
+  <header class="text-white p-2 text-nowrap align-middle">
+    <h1 class="text-4xl font-extrabold"><img src={logo} class="logo" alt="Logo" />Coin Sorter</h1>
+  </header>
+
+  <!-- Content -->
+  <div class="flex flex-grow overflow-hidden">
+    <div class="basis-1/4 overflow-hidden p-2">
+      <div class="flex-1 overflow-y-auto p-2">
+        <!-- Column 1 Content -->
+        <input type="text" bind:value={mint} placeholder="Enter mint address" />
+        {#if info}
+          <p class="p-2">Name: {info.name}</p>
+          <p class="p-2">Symbol: {info.symbol}</p>
+          <!-- info.logoURI -->
+        {/if}
+      </div>
+    </div>
+    <div class="basis-1/2 overflow-hidden p-2">
+      <div class="flex-1 overflow-y-auto">
+        <!-- Column 2 Content -->
+        <DexToolsChart {pair} />
+      </div>
+    </div>
+    <div class="basis-1/4 overflow-hidden p-2">
+      <div class="flex-1 overflow-y-auto">
+        <!-- Column 3 Content -->
+        <RugCheck {mint} />
+      </div>
+    </div>
   </div>
+
+  <!-- Footer -->
+  <footer class="text-white p-2 mt-auto">
+    <i>Created by tedoc</i>
+  </footer>
 </main>
 
 <style>
   .logo {
-    height: 2em;
-    padding: 0.2em;
-    will-change: filter;
-    transition: filter 300ms;
-    display: inline;
+    height: 50px;
+    width: 50px;
+    display: inline-block;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #ef7903da);
-  }
+
   input {
-    margin: 1em 0;
-    padding: 0.5em;
     font-size: 1em;
     border-radius: 0.25em;
     border: 1px solid #ccc;
     width: 100%;
     max-width: 420px;
+    color: black;
   }
 </style>

@@ -1,16 +1,5 @@
 <script lang="ts">
-  import { getTokenInfo, type TokenInfo } from '../lib/utils';
-
-  export let mint: string;
-  let pair: string | null;
-
-  $: if (mint) {
-    getTokenInfo(mint).then((info: TokenInfo | null) => {
-      if (info?.pool) {
-        pair = info.pool;
-      }
-    });
-  }
+  export let pair: string | null;
 </script>
 
 <div>
@@ -18,8 +7,9 @@
     <iframe
       id="dextools-widget"
       title="DEXTools Trading Chart"
-      width="500"
-      height="400"
+      frameborder="0"
+      class="w-full"
+      height="600"
       src="https://www.dextools.io/widget-chart/en/solana/pe-light/{pair}?theme=dark&chartType=2&chartResolution=30&drawingToolbars=false"
     ></iframe>
   {/if}

@@ -48,20 +48,13 @@
 <a href="https://rugcheck.xyz/tokens/{mint}" target="_blank">
   <div class="token-report {bgColor}">
     {#if tokenReport}
-      <h2>RugCheck - Total Score: {tokenReport.score}</h2>
-
-      <p><strong>Risks:</strong></p>
+      <h2 class="text-l font-bold">RugCheck - Total Score: {tokenReport.score}</h2>
       {#if tokenReport.risks.length > 0}
         <ul>
           {#each tokenReport.risks as risk}
-            <li>
-              <strong>{risk.name}:</strong>
-              {risk.value}<br />
-              <em>{risk.description}</em><br />
-              <strong>Score:</strong>
-              {risk.score}<br />
-              <strong>Level:</strong>
-              {risk.level}
+            <li class="p-2">
+              <p class="uppercase font-medium">{risk.level} - {risk.name}</p>
+              <p>{risk.description} {risk.value}</p>
             </li>
           {/each}
         </ul>
@@ -84,13 +77,13 @@
     color: black;
   }
   .green {
-    background-color: green;
+    background-color: rgba(0, 255, 0, 0.5);
   }
   .yellow {
-    background-color: yellow;
+    background-color: rgba(255, 255, 0, 0.5);
     color: black;
   }
   .red {
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0.5);
   }
 </style>
