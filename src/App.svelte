@@ -1,14 +1,15 @@
 <script lang="ts">
   import logo from './assets/coins.png';
-  import { getTokenInfo, type TokenInfo } from './lib/utils';
+  import { getTokenInfo, type TokenInfo, fetchItem, storeItem } from './lib/utils';
   import RugCheck from './components/RugCheck.svelte';
   import DexToolsChart from './components/DexToolsChart.svelte';
 
-  let mint: string = 'Bdpoziz793iwBUzzw2YDcPapdccrgNJ1ds5SZf1ppump';
+  let mint: string = fetchItem('mint');
   let pair: string;
   let info: TokenInfo | null;
 
   $: if (mint) {
+    storeItem('mint', mint);
     getTokenInfo(mint).then((tokenInfo: TokenInfo | null) => {
       info = tokenInfo;
       if (info?.pool) {
@@ -31,9 +32,11 @@
         <!-- Column 1 Content -->
         <input type="text" bind:value={mint} placeholder="Enter mint address" />
         {#if info}
-          <p class="p-2">Name: {info.name}</p>
-          <p class="p-2">Symbol: {info.symbol}</p>
-          <!-- info.logoURI -->
+          <div class="p-4">
+            <p class="p-2">Name: {info.name}</p>
+            <p class="p-2">Symbol: {info.symbol}</p>
+            <!-- info.logoURI -->
+          </div>
         {/if}
       </div>
     </div>

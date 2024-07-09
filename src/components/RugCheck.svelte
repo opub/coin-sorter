@@ -80,7 +80,7 @@
     background-color: rgba(0, 255, 0, 0.5);
   }
   .yellow {
-    background-color: rgba(255, 255, 0, 0.5);
+    background-color: rgba(255, 255, 0, 0.7);
     color: black;
   }
   .red {

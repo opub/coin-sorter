@@ -54,7 +54,7 @@ export interface TokenInfo extends Mint {
 
 const SOL: string = 'So11111111111111111111111111111111111111112';
 
-export const getTokenInfo = async (mint: string): Promise<TokenInfo | null> => {
+export async function getTokenInfo(mint: string): Promise<TokenInfo | null> {
   try {
     const infoResponse = await axios.get<PoolResponse>(
       'https://api-v3.raydium.io/pools/info/mint',
@@ -76,11 +76,13 @@ export const getTokenInfo = async (mint: string): Promise<TokenInfo | null> => {
       throw new Error('No info found for the given token mint address.');
     }
 
-    const poolInfo = data[0];
+    console.log('TOKEN INFO', JSON.stringify(data, null, 2));
 
+    const poolInfo = data[0];
+    const token = ['SOL', 'WSOL'].includes(poolInfo.mintA.symbol) ? poolInfo.mintB : poolInfo.mintA;
     const info = {
       pool: poolInfo.id,
-      ...poolInfo.mintB
+      ...token
     };
 
     return info;
@@ -88,4 +90,28 @@ export const getTokenInfo = async (mint: string): Promise<TokenInfo | null> => {
     console.error('Error fetching SOL pair ID:', error);
     return null;
   }
-};
+}
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+export function storeItem(key: string, value: any): void {
+  if (value === null || value === undefined) {
+    localStorage.removeItem(key);
+  } else if (typeof value === 'string') {
+    localStorage.setItem(key, value);
+  } else {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+}
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+export function fetchItem(key: string): any {
+  const value = localStorage.getItem(key);
+  if (value === null) {
+    return value;
+  }
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    return value;
+  }
+}
