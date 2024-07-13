@@ -7,8 +7,9 @@
   let mint: string = fetchItem('mint');
   let pair: string;
   let info: TokenInfo | null;
+  let previous: string;
 
-  $: if (mint) {
+  $: if (mint && mint !== previous) {
     storeItem('mint', mint);
     getTokenInfo(mint).then((tokenInfo: TokenInfo | null) => {
       info = tokenInfo;
@@ -16,6 +17,7 @@
         pair = info.pool;
       }
     });
+    previous = mint;
   }
 </script>
 
@@ -29,7 +31,6 @@
   <div class="flex flex-grow overflow-hidden">
     <div class="basis-1/4 overflow-hidden p-2">
       <div class="flex-1 overflow-y-auto p-2">
-        <!-- Column 1 Content -->
         <input type="text" bind:value={mint} placeholder="Enter mint address" />
         {#if info}
           <div class="p-4">
@@ -42,13 +43,11 @@
     </div>
     <div class="basis-1/2 overflow-hidden p-2">
       <div class="flex-1 overflow-y-auto">
-        <!-- Column 2 Content -->
         <DexToolsChart {pair} />
       </div>
     </div>
     <div class="basis-1/4 overflow-hidden p-2">
       <div class="flex-1 overflow-y-auto">
-        <!-- Column 3 Content -->
         <RugCheck {mint} />
       </div>
     </div>

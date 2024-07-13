@@ -54,7 +54,16 @@ export interface TokenInfo extends Mint {
 
 const SOL: string = 'So11111111111111111111111111111111111111112';
 
+let lastToken: string | null = null;
+let lastInfo: TokenInfo | null = null;
+
 export async function getTokenInfo(mint: string): Promise<TokenInfo | null> {
+  if (lastToken === mint) {
+    return lastInfo;
+  }
+
+  console.log('getTokenInfo', mint);
+
   try {
     const infoResponse = await axios.get<PoolResponse>(
       'https://api-v3.raydium.io/pools/info/mint',
@@ -84,6 +93,9 @@ export async function getTokenInfo(mint: string): Promise<TokenInfo | null> {
       pool: poolInfo.id,
       ...token
     };
+
+    lastInfo = info;
+    lastToken = mint;
 
     return info;
   } catch (error) {

@@ -24,7 +24,7 @@
       tokenReport = response.data;
       setBgColor(tokenReport?.score ?? -1);
     } catch (error) {
-      console.error('Error fetching token report:', error);
+      console.error('fetchTokenReport.ERROR', error);
     }
   };
 
@@ -41,29 +41,34 @@
   };
 
   $: if (mint) {
+    console.log('RugCheck', mint);
     fetchTokenReport();
   }
 </script>
 
-<a href="https://rugcheck.xyz/tokens/{mint}" target="_blank">
-  <div class="token-report {bgColor}">
-    {#if tokenReport}
-      <h2 class="text-l font-bold">RugCheck - Total Score: {tokenReport.score}</h2>
-      {#if tokenReport.risks.length > 0}
-        <ul>
-          {#each tokenReport.risks as risk}
-            <li class="p-2">
-              <p class="uppercase font-medium">{risk.level} - {risk.name}</p>
-              <p>{risk.description} {risk.value}</p>
-            </li>
-          {/each}
-        </ul>
-      {:else}
-        <p>💎 No risks found.</p>
+{#if mint}
+  <a href="https://rugcheck.xyz/tokens/{mint}" target="_blank">
+    <div class="token-report {bgColor}">
+      {#if tokenReport}
+        <h2 class="text-l font-bold">RugCheck - Total Score: {tokenReport.score}</h2>
+        {#if tokenReport.risks.length > 0}
+          <ul>
+            {#each tokenReport.risks as risk}
+              <li class="p-2">
+                <p class="uppercase font-medium">{risk.level} - {risk.name}</p>
+                <p>{risk.description} {risk.value}</p>
+              </li>
+            {/each}
+          </ul>
+        {:else}
+          <p>💎 No risks found.</p>
+        {/if}
       {/if}
-    {/if}
-  </div>
-</a>
+    </div>
+  </a>
+{:else}
+  <div></div>
+{/if}
 
 <style>
   .token-report {
