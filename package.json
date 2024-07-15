@@ -9,20 +9,21 @@
     "build": "vite build",
     "format": "prettier --write . && eslint .",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
+    "test": "node --no-warnings=ExperimentalWarning --loader ts-node/esm ./src/lib/swap.ts"
   },
   "dependencies": {
+    "@project-serum/anchor": "^0.26.0",
+    "@solana/spl-token": "^0.4.8",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-wallets": "^0.19.30",
-    "@solana/web3.js": "^1.90.1",
+    "@solana/web3.js": "^1.94.0",
     "@svelte-on-solana/wallet-adapter-anchor": "1.0.16-alpha.0",
     "@svelte-on-solana/wallet-adapter-core": "1.0.11-alpha.0",
     "@svelte-on-solana/wallet-adapter-ui": "1.0.21-alpha.0",
-    "axios": "^1.6.7",
-    "buffer": "^6.0.3",
-    "clerk-sveltekit": "^0.4.1",
-    "svelte-table": "^0.6.3",
-    "svelte-toasts": "^1.1.2"
+    "axios": "^1.7.2",
+    "bs58": "^6.0.0",
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
     "@fontsource/fira-mono": "^5.0.13",
@@ -44,6 +45,7 @@
     "svelte": "^4.2.18",
     "svelte-check": "^3.8.1",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "tslib": "^2.6.3",
     "typescript": "^5.3.3",
     "vite": "^5.3.1",

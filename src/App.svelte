@@ -3,6 +3,7 @@
   import { getTokenInfo, type TokenInfo, fetchItem, storeItem } from './lib/utils';
   import RugCheck from './components/RugCheck.svelte';
   import DexToolsChart from './components/DexToolsChart.svelte';
+  import JupiterSwap from './components/JupiterSwap.svelte';
 
   let mint: string = fetchItem('mint');
   let pair: string;
@@ -39,6 +40,7 @@
             <!-- info.logoURI -->
           </div>
         {/if}
+        <JupiterSwap {mint} />
       </div>
     </div>
     <div class="basis-1/2 overflow-hidden p-2">
