@@ -1,76 +1,105 @@
-import { Connection, Keypair, VersionedTransaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import axios from 'axios';
+import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, VersionedTransaction } from '@solana/web3.js';
+import { getAccount, getAssociatedTokenAddressSync, getMint } from '@solana/spl-token';
 import { Wallet } from '@project-serum/anchor';
+import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 
-const walletPath = path.resolve('.secure/wallet.json');
-console.log('wallet', walletPath);
-// AyBgKL9XZa5FRehypY7tMzhhjcGJJZ3sHj13eA3Tu2Xm
-const wallet = new Wallet(Keypair.fromSecretKey(new Uint8Array(JSON.parse(fs.readFileSync(walletPath, 'utf8')))));
-
+const SOL = 'So11111111111111111111111111111111111111112';
 const RPC = 'https://fragrant-green-tab.solana-mainnet.quiknode.pro/9562d9127f7a75d7ab3e3be61c85c78bdac7ccfa/';
 const connection = new Connection(RPC);
 
-// https://station.jup.ag/docs/apis/swap-api#v6-api-reference
-async function buyToken(amountSOL: number, token: string) {
+// AyBgKL9XZa5FRehypY7tMzhhjcGJJZ3sHj13eA3Tu2Xm
+const walletPath = path.resolve('.secure/wallet.json');
+const wallet = new Wallet(Keypair.fromSecretKey(new Uint8Array(JSON.parse(fs.readFileSync(walletPath, 'utf8')))));
+console.log('wallet', walletPath);
 
+function getTokenAddress(token: string): PublicKey {
+    const address = getAssociatedTokenAddressSync(new PublicKey(token), wallet.publicKey);
+    return address;
+}
+
+async function getTokenBalance(token: string): Promise<number> {
+    const address = getTokenAddress(token);
+    try {
+        const account = await getAccount(connection, address);
+        const mint = await getMint(connection, account.mint);
+        return Number(account.amount) / (10 ** mint.decimals);
+    }
+    catch (e) {
+        // getAccount will error if token never held
+        return 0;
+    }
+}
+
+// https://station.jup.ag/docs/apis/swap-api#v6-api-reference
+async function buyToken(amountSOL: number, token: string, slippageBps: number = 500): Promise<void> {
+    // get quote for swap
     const quoteResponse = await axios.get('https://quote-api.jup.ag/v6/quote', {
         params: {
-            inputMint: 'So11111111111111111111111111111111111111112',
+            inputMint: SOL,
             outputMint: token,
-            amount: LAMPORTS_PER_SOL * amountSOL,
-            slippageBps: 500 // 5%
+            amount: amountSOL * LAMPORTS_PER_SOL,
+            slippageBps
         }
     }).then(response => response.data);
-    console.log('quoteResponse', quoteResponse);
 
-    // get serialized transactions for the swap
+    // get serialized transaction for the swap
+    // see https://station.jup.ag/docs/apis/troubleshooting#transaction-confirmation-timeout
     const { swapTransaction } = await axios.post('https://quote-api.jup.ag/v6/swap', {
         quoteResponse,
         userPublicKey: wallet.publicKey.toString(),
         wrapAndUnwrapSol: true,
-        dynamicComputeUnitLimit: true, // allow dynamic compute limit instead of max 1,400,000
-        prioritizationFeeLamports: 'auto' // or custom lamports: 1000
-
+        dynamicComputeUnitLimit: true,
+        prioritizationFeeLamports: { autoMultiplier: 5 }
     }, {
         headers: {
             'Content-Type': 'application/json'
         }
     }).then(response => response.data);
-    console.log('swapTransaction', swapTransaction);
 
     // deserialize the transaction
     const swapTransactionBuf = Buffer.from(swapTransaction, 'base64');
-    var transaction = VersionedTransaction.deserialize(swapTransactionBuf);
-    console.log('transaction', transaction);
+    const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
 
     // sign the transaction
     transaction.sign([wallet.payer]);
 
+    // send and confirm
     const { lastValidBlockHeight, blockhash } = await connection.getLatestBlockhash();
-
     const signature = await connection.sendTransaction(transaction, { maxRetries: 5 });
-
     const confirmation = await connection.confirmTransaction({
         signature,
         blockhash,
         lastValidBlockHeight
-    }, 'confirmed');
+    }, 'finalized');
 
     if (confirmation.value.err) {
         throw new Error(`❌ Transaction not confirmed - ${confirmation.value.err}`);
     }
-    console.log('🎉 Transaction Succesfully Confirmed!', '\n', `https://solscan.io/tx/${signature}`);
+    console.log(`✅ https://solscan.io/tx/${signature}`);
 }
 
 (async () => {
-    const amountSOL = 0.01; // Amount of SOL to swap
-    const token = 'USAaizaW8YVRF47xu5HqgXk6zJNNEN9gFuztyhDXqLm'; // Replace with the actual token mint address
+    const amountSOL = 0.01;
+    // const token = 'USAaizaW8YVRF47xu5HqgXk6zJNNEN9gFuztyhDXqLm';
+    const token = 'DPc5aw1FEg71LuKU52RFehWmj38xFCNJ1VkJejbcqD8T';
 
     try {
+        console.log('getting previous balance');
+        const previous = await getTokenBalance(token);
+        console.log('previous', previous);
+
         console.log('buying token');
         await buyToken(amountSOL, token);
+
+        console.log('getting current balance');
+        const current = await getTokenBalance(token);
+        console.log('current', current);
+
+        const bought = current - previous;
+        console.log('bought', bought);
+
     } catch (error) {
         console.error('Error:', error);
     }
